@@ -1,7 +1,7 @@
 # Site wide configuration
 title:            Nic Grayson
 locale:           en_US
-url:              http://nicgrayson.com
+url:              http://localhost:4000
 
 # Jekyll configuration
 permalink:   /:categories/:title/
@@ -26,7 +26,7 @@ owner:
   avatar: bio-photo.jpg
   bio: "Infrastructure Engineer"
   email: nic.grayson@gmail.com
-  disqus-shortname:
+  disqus-shortname: nicgraysonblog
   twitter: nicgrayson
   github: nicgrayson
   instagram: nicgrayson
