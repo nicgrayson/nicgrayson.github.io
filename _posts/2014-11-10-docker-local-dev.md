@@ -21,6 +21,8 @@ comments: true
 
 This setup lets you route through a running fig project to an app you start on your machine outside of docker
 
+<iframe width="420" height="315" src="//www.youtube.com/embed/ynRzehUDoSk" frameborder="0" allowfullscreen></iframe>
+
 ## Motivation
 
 When developing locally you frequently need to run dependencies of your application locally. This can be problematic if you are running a different operating system than your hosting environment. Frequently database versions or dependencies on other installed and/or running applications can cause the 'It works in my machine!' problem. This project allows developers to run a copy of production while running a local copy of any work in progess applications. Running a fig project like this allows for a very fast development feedback cycle.
