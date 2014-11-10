@@ -13,6 +13,11 @@ sass:
 gems:
   - jekyll-sitemap
 
+analytics:
+  provider: google
+  google:
+    tracking_id : 'UA-26226840-1'
+
 kramdown:
   auto_ids: true
   footnote_nr: 1
