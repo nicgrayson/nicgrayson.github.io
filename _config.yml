@@ -16,7 +16,7 @@ gems:
 analytics:
   provider: google
   google:
-    tracking_id : 'UA-26226840-1'
+    tracking_id : UA-26226840-1
 
 kramdown:
   auto_ids: true
