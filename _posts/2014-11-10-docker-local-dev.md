@@ -36,7 +36,7 @@ We use docker to run all of our databases, applications, and wiring. Installatio
 Fig allows you to start up docker containers and cordinate how they run. Installation documents [here](http://www.fig.sh/install.html).
 
 ### boot2docker
-Boot2docker enables none linux operating systems (Mac and Windows) to run docker as if it was native. To install boot2docker follow the docs [here](http://boot2docker.io). Note that you need have version 1.3.x installed for the volume mounting to work correctly.
+Boot2docker enables non-linux operating systems (Mac and Windows) to run docker as if it was native. To install boot2docker follow the docs [here](http://boot2docker.io). Note that you need have version 1.3.x installed for the volume mounting to work correctly.
 
 ## Fig Project Setup
 
@@ -190,7 +190,7 @@ api_1 | == Sinatra/1.4.5 has taken the stage on 4567 for development with backup
 api_1 | [2014-11-09 04:18:02] INFO  WEBrick::HTTPServer#start: pid=7 port=4567
 {% endhighlight %}
 
-fig log when app starts up:
+log when app starts up:
 
 {% highlight bash %}
 lb_1  | [WARNING] 312/042020 (10) : Server srvs-api/api-local is UP, reason: Layer4 check passed, check duration: 2ms. 1 active and 1 backup servers online. 0 sessions requeued, 0 total in queue.
