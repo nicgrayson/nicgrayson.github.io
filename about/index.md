@@ -1,15 +1,11 @@
 ---
 layout: page
-title: About This Blog
+title: About
 tags: [about]
 comments: true
 
 ---
 
-Nic Grayson's Tech Blog is a place for me to share projects I work on
-
-## This blog is all about:
-
-* Docker
-* Mesos
-* Databases
+I'm a programer in Des Moines, IA. I work for [BannoJHA](https://banno.com).
+<br><br>
+I mostly write about infrastructure engineering.
