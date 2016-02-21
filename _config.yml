@@ -12,20 +12,21 @@ sass:
   style: compressed
 gems:
   - jekyll-sitemap
+  - jekyll-gist
 
 kramdown:
   auto_ids: true
   footnote_nr: 1
   entity_output: as_char
   toc_levels: 1..6
-  use_coderay: false
+  enable_coderay: false
 
 # Site owner
 owner:
   name: Nic Grayson
   avatar: bio-photo.jpg
   bio: "Infrastructure Engineer"
-  email: nic.grayson@gmail.com
+  email: nicgrayson@gmail.com
   disqus-shortname: nicgraysonblog
   twitter: nicgrayson
   github: nicgrayson
