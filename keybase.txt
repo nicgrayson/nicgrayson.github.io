@@ -1,0 +1,55 @@
+==================================================================
+https://keybase.io/nicgrayson
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://nicgrayson.com
+  * I am nicgrayson (https://keybase.io/nicgrayson) on keybase.
+  * I have a public key ASDGZW6lYqO783q2W1qsP1UF6gPBc6x-GvaNIDnODCl6Dgo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120c6656ea562a3bbf37ab65b5aac3f5505ea03c173ac7e1af68d2039ce0c297a0e0a",
+      "host": "keybase.io",
+      "kid": "0120c6656ea562a3bbf37ab65b5aac3f5505ea03c173ac7e1af68d2039ce0c297a0e0a",
+      "uid": "a6c741f0790c2aed4e335f94e43c4119",
+      "username": "nicgrayson"
+    },
+    "merkle_root": {
+      "ctime": 1501185461,
+      "hash": "7f72cab7bf2f1426128353c509f42c8a84f5a44c19772625eeed831e0cc071aed0657fbe67282efa95aee61667153cb52a09f912beb5681ecc45d23d289a9578",
+      "hash_meta": "661af65c783d723d474020eaabbe3a417a5dd576e06f6fed8926e229ae29cb76",
+      "seqno": 1286005
+    },
+    "service": {
+      "hostname": "nicgrayson.com",
+      "protocol": "http:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.26"
+  },
+  "ctime": 1501185469,
+  "expire_in": 504576000,
+  "prev": "c71f279543f4460a67d4815e94200bcfd6d89e525cac55a50c28881f83b61f0f",
+  "seqno": 5,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgxmVupWKju/N6tltarD9VBeoDwXOsfhr2jSA5zgwpeg4Kp3BheWxvYWTFA0d7ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwYzY2NTZlYTU2MmEzYmJmMzdhYjY1YjVhYWMzZjU1MDVlYTAzYzE3M2FjN2UxYWY2OGQyMDM5Y2UwYzI5N2EwZTBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwYzY2NTZlYTU2MmEzYmJmMzdhYjY1YjVhYWMzZjU1MDVlYTAzYzE3M2FjN2UxYWY2OGQyMDM5Y2UwYzI5N2EwZTBhIiwidWlkIjoiYTZjNzQxZjA3OTBjMmFlZDRlMzM1Zjk0ZTQzYzQxMTkiLCJ1c2VybmFtZSI6Im5pY2dyYXlzb24ifSwibWVya2xlX3Jvb3QiOnsiY3RpbWUiOjE1MDExODU0NjEsImhhc2giOiI3ZjcyY2FiN2JmMmYxNDI2MTI4MzUzYzUwOWY0MmM4YTg0ZjVhNDRjMTk3NzI2MjVlZWVkODMxZTBjYzA3MWFlZDA2NTdmYmU2NzI4MmVmYTk1YWVlNjE2NjcxNTNjYjUyYTA5ZjkxMmJlYjU2ODFlY2M0NWQyM2QyODlhOTU3OCIsImhhc2hfbWV0YSI6IjY2MWFmNjVjNzgzZDcyM2Q0NzQwMjBlYWFiYmUzYTQxN2E1ZGQ1NzZlMDZmNmZlZDg5MjZlMjI5YWUyOWNiNzYiLCJzZXFubyI6MTI4NjAwNX0sInNlcnZpY2UiOnsiaG9zdG5hbWUiOiJuaWNncmF5c29uLmNvbSIsInByb3RvY29sIjoiaHR0cDoifSwidHlwZSI6IndlYl9zZXJ2aWNlX2JpbmRpbmciLCJ2ZXJzaW9uIjoxfSwiY2xpZW50Ijp7Im5hbWUiOiJrZXliYXNlLmlvIGdvIGNsaWVudCIsInZlcnNpb24iOiIxLjAuMjYifSwiY3RpbWUiOjE1MDExODU0NjksImV4cGlyZV9pbiI6NTA0NTc2MDAwLCJwcmV2IjoiYzcxZjI3OTU0M2Y0NDYwYTY3ZDQ4MTVlOTQyMDBiY2ZkNmQ4OWU1MjVjYWM1NWE1MGMyODg4MWY4M2I2MWYwZiIsInNlcW5vIjo1LCJ0YWciOiJzaWduYXR1cmUifaNzaWfEQAKUi8IHQrynPHkJlLj2NFZ5MCeG7dDLQ5GcLPm8ic9SV/jHvjUcivcohvdxJObwH8fFR+EuRFLsQTj28LG8dwOoc2lnX3R5cGUgpGhhc2iCpHR5cGUIpXZhbHVlxCDDZ3stjhq8VioOQPVRbxaOqWmzeGfFF1xYmjLjFWoxGKN0YWfNAgKndmVyc2lvbgE=
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/nicgrayson
+
+==================================================================
