@@ -17,7 +17,7 @@ comments: true
 </div>
 </section><!-- /#table-of-contents -->
 
-## TL;DR
+## tl;dr
 
 This setup lets you route through a running fig project to an app you start on your machine outside of docker
 
