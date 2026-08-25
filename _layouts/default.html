@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% if page.title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  {% if page.description %}
+  <meta name="description" content="{{ page.description | strip_html }}">
+  {% elsif site.description %}
+  <meta name="description" content="{{ site.description }}">
+  {% endif %}
+
+  <link rel="canonical" href="{{ site.url }}{{ page.url | remove: 'index.html' }}">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta property="og:description" content="{% if page.description %}{{ page.description | strip_html }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:url" content="{{ site.url }}{{ page.url | remove: 'index.html' }}">
+  <meta name="twitter:card" content="summary">
+
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9f7">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16181d">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="alternate icon" type="image/png" href="/favicon.png">
+  <link rel="icon" href="/favicon.ico">
+</head>
+
+<body class="{% if page.body-class %}{{ page.body-class }}{% else %}page{% endif %}">
+
+  <header class="site-header">
+    <div class="wrap header-wrap">
+      <a class="site-name" href="/">{{ site.title }}</a>
+      <nav aria-label="Main navigation">
+        <a href="/" {% if page.url == '/' %}aria-current="page"{% endif %}>Home</a>
+        <a href="/command-line/" {% if page.url == '/command-line/' %}aria-current="page"{% endif %}>Command Line</a>
+        <a href="/resume.pdf">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-wrap">
+      <p>&copy; {{ site.time | date: '%Y' }} {{ site.owner.name }}</p>
+      <nav aria-label="Social links">
+        <a href="https://github.com/{{ site.owner.github }}">GitHub</a>
+        <a href="mailto:{{ site.owner.email }}">Email</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

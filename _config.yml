@@ -1,40 +1,35 @@
-# Site wide configuration
-title:            Nic Grayson
-locale:           en_US
-url:              http://nicgrayson.com
+# Site configuration
+title: Nic Grayson
+description: >-
+  Nic Grayson is an infrastructure engineer. Notes on the command line and
+  other things that make computers behave.
+url: https://nicgrayson.com
+lang: en
 
-# Jekyll configuration
-permalink:   /:categories/:title/
-markdown:    kramdown
+# Build settings
+markdown: kramdown
 highlighter: rouge
+permalink: pretty
+
 sass:
   sass_dir: _sass
   style: compressed
 
-# Plugins
 plugins:
   - jekyll-sitemap
-  - jekyll-gist
 
 kramdown:
   auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  enable_coderay: false
 
 # Site owner
 owner:
   name: Nic Grayson
-  avatar: bio-photo.jpg
-  bio: "Infrastructure Engineer"
-  email: nicgrayson@gmail.com
-  disqus-shortname: nicgraysonblog
-  twitter: nicgrayson
+  email: me@nicgrayson.com
   github: nicgrayson
-  instagram: nicgrayson
-  google:
-    analytics: UA-26226840-1
 
-include: [".htaccess"]
-exclude: ["lib", "config.rb", "Capfile", "config", "log", "Rakefile", "Rakefile.rb", "tmp", "less", "*.sublime-project", "*.sublime-workspace", "test", "spec", "Gruntfile.js", "package.json", "node_modules", "Gemfile", "Gemfile.lock", "LICENSE", "README.md"]
+# Files to exclude from the build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
