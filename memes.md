@@ -5,12 +5,12 @@ description: "A browsable gallery of memes."
 permalink: /memes/
 ---
 
-<p class="page-intro">Click any image to copy its link.</p>
+<p class="page-intro">Click to copy the link. ⌘-click (Ctrl on Windows) to open the full image in a new tab.</p>
 <p class="copy-hint" id="copyHint" hidden>Copied!</p>
 
 <div class="meme-gallery">
 {% for img in site.data.images.images %}
-  <a class="meme" href="/images/{{ img.name }}" title="{{ img.name }}" data-url="/images/{{ img.name }}">
+  <a class="meme" href="/images/{{ img.name }}" title="{{ img.name }}" data-url="/images/{{ img.name }}" target="_blank" rel="noopener">
     <img src="/images/{{ img.name }}" alt="{{ img.name }}" loading="lazy">
     <span class="meme-name">{{ img.name }}</span>
   </a>
@@ -41,6 +41,12 @@ permalink: /memes/
   gallery.addEventListener('click', function (e) {
     var link = e.target.closest('.meme');
     if (!link) return;
+
+    // Cmd/Ctrl-click or middle-click: let the browser open the image in a new tab.
+    if (e.metaKey || e.ctrlKey || e.button === 1) {
+      return;
+    }
+
     e.preventDefault();
     var url = link.getAttribute('href');
     var absolute = new URL(url, window.location.origin).href;

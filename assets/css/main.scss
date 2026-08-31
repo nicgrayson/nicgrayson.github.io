@@ -362,8 +362,9 @@ code, pre, kbd, samp {
 
 .meme img {
   width: 100%;
-  height: 150px;
-  object-fit: cover;
+  height: auto;
+  max-height: 260px;
+  object-fit: contain;
   border-radius: 6px;
   background: var(--bg);
 }
