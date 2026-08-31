@@ -324,6 +324,16 @@ code, pre, kbd, samp {
 
 /* Memes gallery --------------------------------------------------------- */
 
+body.memes {
+  --meme-wrap: 88rem;
+}
+
+body.memes main.wrap,
+body.memes .wrap {
+  max-width: var(--meme-wrap);
+  padding-top: 1.5rem;
+}
+
 .copy-hint {
   display: inline-block;
   padding: 0.25rem 0.75rem;
@@ -338,9 +348,30 @@ code, pre, kbd, samp {
 }
 .copy-hint.show { opacity: 1; }
 
+.meme-hint {
+  margin: 0.25rem 0 0;
+}
+
+.add-meme {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.add-meme:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
 .meme-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
   margin-top: 1.5rem;
 }

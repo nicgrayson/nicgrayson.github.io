@@ -3,10 +3,12 @@ layout: default
 title: Memes
 description: "A browsable gallery of memes."
 permalink: /memes/
+body-class: memes
 ---
 
 <p class="page-intro">Click to copy the link. ⌘-click (Ctrl on Windows) to open the full image in a new tab.</p>
 <p class="copy-hint" id="copyHint" hidden>Copied!</p>
+<p class="meme-hint"><a class="add-meme" href="https://github.com/nicgrayson/nicgrayson.github.io/compare/main...main?expand=1&template=add_meme" target="_blank" rel="noopener">＋ Add a meme</a></p>
 
 <div class="meme-gallery">
 {% for img in site.data.images.images %}
