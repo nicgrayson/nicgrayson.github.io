@@ -322,6 +322,63 @@ code, pre, kbd, samp {
 }
 .site-footer nav a:hover { color: var(--accent); }
 
+/* Memes gallery --------------------------------------------------------- */
+
+.copy-hint {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  margin-top: 0.5rem;
+}
+.copy-hint.show { opacity: 1; }
+
+.meme-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.meme {
+  display: block;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem;
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.meme:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.meme img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.meme-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Small screens --------------------------------------------------------- */
 
 @media (max-width: 480px) {
