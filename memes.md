@@ -43,7 +43,8 @@ permalink: /memes/
     if (!link) return;
     e.preventDefault();
     var url = link.getAttribute('href');
-    copy(url).then(function () {
+    var absolute = new URL(url, window.location.origin).href;
+    copy(absolute).then(function () {
       hint.hidden = false;
       hint.classList.add('show');
       setTimeout(function () {
