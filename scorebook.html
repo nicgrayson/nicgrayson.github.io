@@ -102,7 +102,6 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .badge.live{background:var(--red);border-color:var(--red);color:#fff}
 .badge.proj{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
 .badge.cc{background:var(--accent);border-color:var(--accent);color:#fff}
-.chief-note{font-size:12.5px;font-weight:700;color:var(--muted);margin-top:9px}
 
 /* ---------- numbers-game fielding diagram ---------- */
 .fld2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px 24px}
@@ -126,6 +125,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   font-family:var(--sans);font-weight:700;font-size:12px;line-height:1.1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
 .field .jn.filled{background:var(--panel);border:1px solid var(--line);color:var(--ink)}
+.field .jn.chg{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
 .field .jn.empty{background:transparent;border:1px dashed var(--line);color:var(--muted);
   min-width:24px;padding:4px 1px 3px}
 .dh-note{text-align:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:8px}
@@ -890,7 +890,7 @@ function currentFielders(side, d, reveal){
     d.moves.forEach(function(m){
       if(m.team === side.which && /^\d$/.test(m.posNum)){
         var info = d.idx[m.pid] || {};
-        occ[m.posNum] = { num: info.num || "", name: info.name || "—" };
+        occ[m.posNum] = { num: info.num || "", name: info.name || "—", changed: true };
       }
     });
   }
@@ -911,7 +911,7 @@ function fieldingDiagram(side, d, reveal){
     var filled = !!(o && o.name && o.name !== "—");
     slots += '<span class="slot" style="left:'+s[2]+';top:'+s[3]+'">'+
       '<span class="pl">'+s[0]+'</span>'+
-      '<span class="jn'+(filled ? " filled" : " empty")+'">'+
+      '<span class="jn'+(filled ? " filled" : " empty")+(o && o.changed ? " chg" : "")+'">'+
         esc(filled ? lastName(o.name) : "")+'</span>'+
     '</span>';
   });
@@ -1017,9 +1017,6 @@ function render(d, meta){
         if(chief && chief.key === k) lbl += ' <span class="badge cc">CC</span>';
         return '<div class="cell"><div class="lbl">'+lbl+'</div><div class="val">'+esc(u.crew[k]||"—")+'</div></div>';
       }).join("")+'</div>' +
-      (chief
-        ? '<div class="chief-note">'+esc(chief.name)+' is the crew chief.</div>'
-        : '') +
       (u.projected
         ? '<div class="note"><strong>Projected crew.</strong> Not yet posted for this game — rotated '+
           'forward from the '+esc(u.from||"previous")+' game of this series '+
