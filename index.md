@@ -25,6 +25,7 @@ description: "Nic Grayson is an infrastructure engineer."
 </p>
 
 <ul class="home-links">
+  <li><a href="/scorebook.html">Scorebook</a></li>
   <li><a href="https://github.com/nicgrayson">GitHub</a></li>
   <li><a href="mailto:me@nicgrayson.com">Email</a></li>
   <li><a href="/resume.pdf">Resume</a></li>
