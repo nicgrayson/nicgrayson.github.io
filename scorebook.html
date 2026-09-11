@@ -1204,6 +1204,7 @@ function render(d, meta){
    ======================================================================= */
 
 var state = { date:null, loading:false, data:null, lastError:null, timer:null };
+var resetRevealOnLoad = false;   // user changed the day -- hide spoilers for what loads next
 
 function setStatus(text, kind, spinning){
   $("statusText").innerHTML = (spinning ? '<span class="spin"></span> ' : '') + esc(text);
@@ -1242,6 +1243,10 @@ function refresh(manual){
   loadAll(state.date).then(function(d){
     var prevMoves = state.data ? state.data.moves.length : null;
     state.data = d; state.lastError = null;
+    if(resetRevealOnLoad){
+      resetRevealOnLoad = false;
+      setRevealed(d.gamePk, false);
+    }
     saveCache(d, state.date);
     render(d, { requestedDate: state.date });
     // Only mention new moves if this game is already un-hidden -- otherwise
@@ -1303,6 +1308,8 @@ document.addEventListener("visibilitychange", function(){
 });
 
 function setDate(dateStr, push){
+  // A change of day starts spoiler-free, even if the same game loads again.
+  var changed = state.data && state.data.date !== dateStr;
   state.date = dateStr;
   $("datePick").value = dateStr;
   if(push){
@@ -1312,7 +1319,11 @@ function setDate(dateStr, push){
     history.replaceState(null,"",u);
   }
   var cached = loadCache(dateStr);
-  if(cached) render(cached, { requestedDate: dateStr });
+  if(cached){
+    if(changed) setRevealed(cached.gamePk, false);
+    render(cached, { requestedDate: dateStr });
+  }
+  if(changed) resetRevealOnLoad = true;
   refresh(false);
 }
 
