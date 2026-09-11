@@ -77,6 +77,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   display:flex;align-items:center;gap:8px;
 }
 .card h2 .rec{color:var(--ink);font-weight:700}
+.card h2 .tdot{width:9px;height:9px;border-radius:2.5px;display:inline-block;flex:none}
 .card .body{padding:12px 14px}
 
 .hero{padding:16px 14px}
@@ -84,8 +85,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .club{flex:1;min-width:0;line-height:1.15}
 .club.away{text-align:left}
 .club.home{text-align:right}
-.club .abbr{font-size:26px;font-weight:800;letter-spacing:-.01em}
-.club .nm{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.club .abbr{font-size:23px;font-weight:800;letter-spacing:-.01em;display:inline-block;
+  padding:4px 11px 5px;border-radius:9px;background:var(--ca,#e7e2da);color:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.club .nm{font-size:13px;color:var(--ct,var(--muted));font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
 .mid{flex:none;text-align:center;min-width:120px}
 .fp-lbl{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .firstpitch{font-size:21px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;
@@ -107,7 +111,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .fld2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px 24px}
 .fld-team{min-width:0}
 .fld-hdr{display:flex;align-items:baseline;gap:7px;margin-bottom:8px}
-.fld-hdr .abbr{font-weight:800;font-size:17px;letter-spacing:-.01em}
+.fld-hdr .abbr{font-weight:800;font-size:17px;letter-spacing:-.01em;color:var(--ct,var(--ink))}
 .fld-hdr .sub{font-size:12.5px;color:var(--muted);font-weight:600;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fld-hdr .chip{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.06em;
@@ -154,6 +158,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .linescore th.team-col,.linescore td.team-col{text-align:left;font-family:var(--sans);font-weight:800;font-size:14px;padding-left:4px}
 .linescore th.tot,.linescore td.tot{font-weight:800;border-left:1px solid var(--line);min-width:28px}
 .linescore td.r-tot{font-size:15px;color:var(--accent)}
+.c-stat{font-size:12.5px;font-family:var(--mono);color:var(--sub);font-weight:500;text-align:left}
 .p-stat{font-size:12px;font-family:var(--mono);color:var(--muted);margin-left:8px;font-weight:500}
 .decisions-row{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:13.5px;padding:10px 0 2px}
 .dec-item{display:flex;align-items:baseline;gap:6px}
@@ -328,6 +333,21 @@ function luminance(hex){
   var n = parseInt(hex,16);
   var r=(n>>16)&255, g=(n>>8)&255, b=n&255;
   return (0.2126*r + 0.7152*g + 0.0722*b)/255;
+}
+/* Per-club colors for a given team: a readable accent and a block fill.
+   The darker of the two official colors wins the chip so white text stays
+   legible on light paper; dark mode gets a lightened tint instead. */
+function teamTheme(team){
+  var c = team ? TEAM_COLORS[team.id] : null;
+  if(!c) return null;
+  var dark = document.documentElement.getAttribute("data-theme") === "dark";
+  var accent = luminance(c.p) <= luminance(c.s) ? c.p : c.s;
+  var tint = dark ? shade(accent, 0.45) : accent;
+  return { chip: tint, text: tint };
+}
+function clubStyle(tt){
+  if(!tt) return "";
+  return ' style="--ca:'+tt.chip+';--ct:'+tt.text+'"';
 }
 function applyTeamTheme(t){
   var c = t ? TEAM_COLORS[t.id] : null;
@@ -716,6 +736,7 @@ function buildSpoilers(live, idx){
         batch.push({ pid: pid, name: name, num: num, bo: bo,
           pos: ((p.allPositions||[])[0]&&p.allPositions[0].abbreviation) ||
                (p.position||{}).abbreviation || "",
+          line: b.summary,
           ab: b.atBats, r: b.runs, h: b.hits, rbi: b.rbi,
           bb: b.baseOnBalls, so: b.strikeOuts });
       }
@@ -898,8 +919,10 @@ function pitcherList(side, d, reveal){
 }
 
 function sideCard(side, label, d, reveal){
+  var tt = teamTheme(side);
   return '<div class="card">'+
-    '<h2>'+esc(label)+' · '+esc(side.name)+
+    '<h2>'+(tt ? '<span class="tdot" style="background:'+tt.chip+'"></span>' : '')+
+      esc(label)+' · '+esc(side.name)+
       (side.record ? ' <span class="rec">'+esc(side.record)+'</span>' : '')+
     '</h2>'+
     '<div class="body">'+
@@ -956,8 +979,9 @@ function fieldingDiagram(side, d, reveal){
   if(reveal){
     d.moves.forEach(function(m){ if(m.team === side.which && /^\d$/.test(m.posNum)) changed++; });
   }
+  var tt = teamTheme(side);
   return '<div class="fld-team">'+
-    '<div class="fld-hdr"><span class="abbr">'+esc(side.abbrev||"")+'</span>'+
+    '<div class="fld-hdr"'+clubStyle(tt)+'><span class="abbr">'+esc(side.abbrev||"")+'</span>'+
       '<span class="sub">'+esc(side.shortName||"")+'</span>'+
       (changed ? '<span class="chip">updated</span>' : '')+
     '</div>'+
@@ -1049,13 +1073,14 @@ function resultCard(d){
         '</td><td>'+esc(b.pos||"")+'</td>'+
         '<td>'+numOrDash(b.ab)+'</td><td>'+numOrDash(b.r)+'</td>'+
         '<td>'+numOrDash(b.h)+'</td><td>'+numOrDash(b.rbi)+'</td>'+
-        '<td>'+numOrDash(b.bb)+'</td><td>'+numOrDash(b.so)+'</td></tr>';
+        '<td>'+numOrDash(b.bb)+'</td><td>'+numOrDash(b.so)+'</td>'+
+        '<td class="c-stat">'+esc(b.line||"")+'</td></tr>';
     }).join("");
     var batHtml = '<div class="linescore-wrap" style="margin-top:12px">'+
       '<div class="lbl">'+esc(side.shortName||side.name)+' · Batting</div>'+
       '<table class="linescore"><thead><tr>'+
         '<th class="team-col">Batter</th><th>Pos</th><th>AB</th><th>R</th><th>H</th>'+
-        '<th>RBI</th><th>BB</th><th>SO</th>'+
+        '<th>RBI</th><th>BB</th><th>SO</th><th>Line</th>'+
       '</tr></thead><tbody>'+batRows+'</tbody></table></div>';
 
     var pRows = data.pitching.map(function(p){
@@ -1111,9 +1136,11 @@ function render(d, meta){
       (d.weather.wind ? ' <span class="sep">·</span> '+esc(d.weather.wind) : '')+'</span>';
   }
 
+  var tA = teamTheme(d.away), tH = teamTheme(d.home);
+
   var hero = '<div class="card hero">'+
     '<div class="hdr">'+
-      '<div class="club away"><div class="abbr">'+esc(d.away.abbrev)+'</div>'+
+      '<div class="club away"><div class="abbr"'+clubStyle(tA)+'>'+esc(d.away.abbrev)+'</div>'+
         '<div class="nm">'+esc(d.away.shortName)+'</div></div>'+
       '<div class="mid">'+
         '<div class="fp-lbl">'+(d.startTBD ? "Start Time TBD" : "First Pitch")+'</div>'+
@@ -1123,7 +1150,7 @@ function render(d, meta){
         (!d.startTBD && !sameZone
           ? '<div class="fp-alt">'+esc(localTime)+' your time</div>' : '')+
       '</div>'+
-      '<div class="club home"><div class="abbr">'+esc(d.home.abbrev)+'</div>'+
+      '<div class="club home"><div class="abbr"'+clubStyle(tH)+'>'+esc(d.home.abbrev)+'</div>'+
         '<div class="nm">'+esc(d.home.shortName)+'</div></div>'+
     '</div>'+
     '<div class="meta">'+
