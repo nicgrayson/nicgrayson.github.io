@@ -133,11 +133,35 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 
 /* live score strip */
 /* spoiler gate */
-.gate{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);
-  border:1px dashed var(--line);border-radius:var(--radius);padding:12px 14px;margin-top:12px}
-.gate .g-txt{font-size:13.5px;color:var(--muted);flex:1;min-width:180px}
+.gate{display:flex;align-items:center;gap:14px;background:var(--panel);
+  border:1px dashed var(--line);border-radius:var(--radius);padding:14px 16px;margin-top:12px}
+.gate .g-txt{font-size:13.5px;color:var(--muted);flex:1;min-width:180px;line-height:1.4}
 .gate .g-txt b{color:var(--ink);font-weight:700}
-.gate button{font-size:14px;font-weight:700;padding:8px 14px;min-height:38px}
+.btn-spoilers{background:#ba1a1a;border:2px solid #8e1010;color:#fff;
+  font-size:15px;font-weight:800;letter-spacing:.02em;padding:12px 22px;min-height:46px;
+  border-radius:10px;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 2px 6px rgba(186,26,26,.35);transition:all .15s ease}
+.btn-spoilers:hover{background:#d32f2f;border-color:#ba1a1a}
+.btn-spoilers:active{transform:scale(.97)}
+.btn-spoilers.active{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+  box-shadow:none;text-transform:none;font-size:13.5px;padding:8px 14px;min-height:36px}
+
+/* ---------- linescore & stats ---------- */
+.linescore-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.linescore{width:100%;border-collapse:collapse;font-size:14px;font-family:var(--mono)}
+.linescore th,.linescore td{padding:6px 7px;text-align:center;border-bottom:1px solid var(--line)}
+.linescore th{font-size:11px;color:var(--muted);font-weight:700}
+.linescore th.team-col,.linescore td.team-col{text-align:left;font-family:var(--sans);font-weight:800;font-size:14px;padding-left:4px}
+.linescore th.tot,.linescore td.tot{font-weight:800;border-left:1px solid var(--line);min-width:28px}
+.linescore td.r-tot{font-size:15px;color:var(--accent)}
+.c-stat{font-size:12.5px;font-family:var(--mono);color:var(--muted);margin-top:2px;font-weight:500}
+.pit .p-stat{font-size:12px;font-family:var(--mono);color:var(--muted);margin-left:8px;font-weight:500}
+.decisions-row{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:13.5px;padding:10px 0 2px}
+.dec-item{display:flex;align-items:baseline;gap:6px}
+.dec-role{font-family:var(--mono);font-size:11px;font-weight:800;padding:2px 6px;border-radius:4px;
+  background:var(--bg);border:1px solid var(--line);color:var(--muted);letter-spacing:.04em}
+.dec-name{font-weight:700}
+.dec-rec{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
 /* ---------- grids ---------- */
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -182,20 +206,6 @@ tr.subrow .poschip{font-size:12px;font-weight:700}
 .pit .row.relief .n,.pit .row.relief .nm{color:var(--sub)}
 .pit .row.cur .nm::after{content:" ●";color:var(--red);font-size:11px;vertical-align:middle}
 
-/* ---------- moves log ---------- */
-.moves{display:flex;flex-direction:column;gap:0}
-.mv{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
-.mv:last-child{border-bottom:0}
-.mv .inn{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--muted);
-  width:34px;flex:none;letter-spacing:.02em}
-.mv .team{font-family:var(--mono);font-weight:800;font-size:11px;padding:2px 5px;border-radius:5px;
-  border:1px solid var(--line);color:var(--muted);flex:none}
-.mv .txt{font-size:14.5px;min-width:0}
-.mv .txt b{font-weight:700}
-.mv .kind{font-family:var(--mono);font-size:10.5px;font-weight:800;color:var(--sub);
-  letter-spacing:.06em;margin-right:5px}
-.mv .out{color:var(--muted)}
-
 .note{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink);
   border-radius:10px;padding:10px 12px;font-size:13.5px;margin-top:10px}
 .empty{color:var(--muted);font-style:italic;padding:14px 2px;font-size:14.5px}
@@ -231,7 +241,6 @@ tr.subrow .poschip{font-size:12px;font-weight:700}
   <div class="foot">
     Data: MLB Stats API (statsapi.mlb.com) · unofficial, for personal scorekeeping.<br>
     Lineups &amp; umpires post ~2–3 hrs before first pitch.<br>
-    No scores anywhere. In-game moves stay hidden until you ask, per game.<br>
     Your team is saved in a cookie as your default for when you return.
   </div>
 </div>
@@ -667,6 +676,69 @@ function buildSide(live, which, idx){
   };
 }
 
+/* Everything needed to render a finished game's box score: the pitching
+   decisions, the line score, and each player's batting/pitching line. */
+function buildSpoilers(live, idx){
+  var ld = live.liveData || {};
+  function person(d){
+    return d && d.fullName ? { id: d.id, name: d.fullName } : null;
+  }
+  var decisions = { winner: person(ld.decisions && ld.decisions.winner),
+                    loser:  person(ld.decisions && ld.decisions.loser),
+                    save:   person(ld.decisions && ld.decisions.save) };
+
+  var ls = ld.linescore || {};
+  function tset(side){
+    var t = (ls.teams||{})[side] || {};
+    return { runs: t.runs||null, hits: t.hits||null,
+             errors: t.errors||null, lob: t.leftOnBase||null };
+  }
+  var linescore = {
+    away: tset("away"), home: tset("home"),
+    innings: (ls.innings||[]).map(function(inn){
+      return { num: inn.num,
+               away: (inn.away||{}).runs != null ? inn.away.runs : null,
+               home: (inn.home||{}).runs != null ? inn.home.runs : null };
+    })
+  };
+
+  function players(side){
+    var box = ((ld.boxscore||{}).teams||{})[side] || {};
+    var batch = [], pitch = [];
+    Object.keys(box.players||{}).forEach(function(k){
+      var p = box.players[k];
+      var person = p.person || {}, pid = person.id;
+      var b = (p.stats||{}).batting || {};
+      var pt = (p.stats||{}).pitching || {};
+      var name = person.fullName || (idx[pid]&&idx[pid].name) || "";
+      var num = p.jerseyNumber || (idx[pid]&&idx[pid].num) || "";
+      var bo = p.battingOrder ? parseInt(p.battingOrder,10)/100 : 99;
+      if(b.summary){
+        batch.push({ pid: pid, name: name, num: num, bo: bo,
+          pos: ((p.allPositions||[])[0]&&p.allPositions[0].abbreviation) ||
+               (p.position||{}).abbreviation || "",
+          summary: b.summary,
+          ab: b.atBats, r: b.runs, h: b.hits, rbi: b.rbi,
+          bb: b.baseOnBalls, so: b.strikeOuts });
+      }
+      if(pt.summary){
+        pitch.push({ pid: pid, name: name, num: num,
+          summary: pt.summary, note: pt.note || "",
+          ip: pt.inningsPitched, er: pt.earnedRuns,
+          so: pt.strikeOuts, runs: pt.runs });
+      }
+    });
+    batch.sort(function(a,b){ return a.bo - b.bo; });
+    return { batting: batch, pitching: pitch };
+  }
+
+  return {
+    decisions: decisions,
+    linescore: linescore,
+    away: players("away"), home: players("home")
+  };
+}
+
 function loadAll(dateStr){
   var found;
   return findGame(dateStr)
@@ -708,7 +780,8 @@ function loadAll(dateStr){
           umps: res[2],
           moves: moves,
           idx: idx,
-          away: away, home: home
+          away: away, home: home,
+          spoilers: buildSpoilers(live, idx)
         };
       });
     });
@@ -841,42 +914,6 @@ function sideCard(side, label, d, reveal){
   '</div>';
 }
 
-function movesCard(d, reveal){
-  if(!reveal || !d.moves.length) return "";
-  var rows = d.moves.map(function(m){
-    var info = d.idx[m.pid] || {};
-    var out  = m.replacedId ? (d.idx[m.replacedId]||{}).name : null;
-    var abbr = m[ "team" ] === "away" ? d.away.abbrev : d.home.abbrev;
-    var kind = m.kind === "pinch_hit" ? "PH"
-             : m.kind === "pinch_run" ? "PR"
-             : m.kind === "pitching"  ? "P"
-             : m.kind === "defensive" ? "DEF"
-             :                          "SWAP";
-    var txt;
-    if(m.kind === "pitching"){
-      var rel = null;
-      var used = (m.team === "away" ? d.away.pitchers : d.home.pitchers)
-                 .filter(function(p){ return p.pid === m.pid; })[0];
-      if(used && used.relieved) rel = used.relieved;
-      txt = '<b>'+esc(info.name||"—")+'</b> #'+esc(info.num||"")+
-            (rel ? ' <span class="out">relieves '+esc(rel)+'</span>' : '');
-    }else if(m.kind === "switch"){
-      txt = '<b>'+esc(info.name||"—")+'</b> <span class="out">moves to '+esc(m.posAbbr)+'</span>';
-    }else{
-      txt = '<b>'+esc(info.name||"—")+'</b> #'+esc(info.num||"")+
-            (out ? ' <span class="out">for '+esc(out)+'</span>' : '')+
-            (m.slot ? ' <span class="out">· slot '+m.slot+'</span>' : '');
-    }
-    return '<div class="mv">'+
-      '<span class="inn">'+esc(m.half + m.inning)+'</span>'+
-      '<span class="team">'+esc(abbr)+'</span>'+
-      '<span class="txt"><span class="kind">'+esc(kind)+'</span>'+txt+'</span>'+
-    '</div>';
-  }).join("");
-  return '<div class="card"><h2>In-Game Moves <span class="badge">'+d.moves.length+'</span></h2>'+
-         '<div class="body"><div class="moves">'+rows+'</div></div></div>';
-}
-
 /* Numbers-game fielding diagram: each defensive spot carries the last name
    of the player out there. Once the game is revealed we roll every mid-game
    move forward — pitching, defensive, switches, pinch-hitters who stay in —
@@ -951,6 +988,108 @@ function fieldingCard(d, reveal){
       fieldingDiagram(d.away, d, reveal) +
       fieldingDiagram(d.home, d, reveal) +
     '</div><div class="fld-note">'+note+'</div></div></div>';
+}
+
+/* The spoiler payoff: pitching decisions, the line score, then each side's
+   batting and pitching lines straight from the box score. */
+function resultCard(d){
+  var sp = d.spoilers;
+  var dec = sp.decisions;
+
+  var decItems = "";
+  [["W", dec.winner], ["L", dec.loser], ["S", dec.save]].forEach(function(pair){
+    var d2 = pair[1];
+    if(!d2 || !d2.name) return;
+    decItems += '<div class="dec-item">'+
+      '<span class="dec-role">'+pair[0]+'</span>'+
+      '<span class="dec-name">'+esc(d2.name)+'</span>'+
+    '</div>';
+  });
+  var decHtml = decItems
+    ? '<div class="lbl">Decision</div><div class="decisions-row">'+decItems+'</div>'
+    : "";
+
+  var ls = sp.linescore;
+  var r = ls.away.runs, l = ls.home.runs;
+  var score = (r==null || l==null) ? "" : esc(r+"–"+l);
+  var innHead = (ls.innings||[]).map(function(i){
+    return '<th>'+(i.num || "")+'</th>';
+  }).join("");
+
+  function linescoreHtml(){
+    var a = ls.away, h = ls.home;
+    function cells(t, sideKey){
+      return (ls.innings||[]).map(function(i){
+        var v = i[sideKey];
+        return '<td>'+(v==null?"":v)+'</td>';
+      }).join("");
+    }
+    return '<div class="linescore-wrap"><table class="linescore">'+
+      '<thead><tr><th class="team-col">Team</th>'+innHead+
+        '<th class="tot">R</th><th class="tot">H</th>'+
+        '<th class="tot">E</th><th class="tot">LOB</th></tr></thead>'+
+      '<tbody>'+
+        '<tr><td class="team-col">'+esc(d.away.shortName||d.away.name)+'</td>'+
+          cells(a,"away")+
+          '<td class="tot r-tot">'+(a.runs==null?"":a.runs)+'</td>'+
+          '<td class="tot">'+(a.hits==null?"":a.hits)+'</td>'+
+          '<td class="tot">'+(a.errors==null?"":a.errors)+'</td>'+
+          '<td class="tot">'+(a.lob==null?"":a.lob)+'</td></tr>'+
+        '<tr><td class="team-col">'+esc(d.home.shortName||d.home.name)+'</td>'+
+          cells(h,"home")+
+          '<td class="tot r-tot">'+(h.runs==null?"":h.runs)+'</td>'+
+          '<td class="tot">'+(h.hits==null?"":h.hits)+'</td>'+
+          '<td class="tot">'+(h.errors==null?"":h.errors)+'</td>'+
+          '<td class="tot">'+(h.lob==null?"":h.lob)+'</td></tr>'+
+      '</tbody></table></div>';
+  }
+
+  function section(side, data){
+    var batRows = data.batting.map(function(b){
+      return '<tr><td class="team-col">'+esc(b.name)+
+        (b.num ? ' <span style="color:var(--muted);font-weight:400">#'+esc(b.num)+'</span>' : '')+
+        '</td><td>'+esc(b.pos||"")+'</td>'+
+        '<td>'+numOrDash(b.ab)+'</td><td>'+numOrDash(b.r)+'</td>'+
+        '<td>'+numOrDash(b.h)+'</td><td>'+numOrDash(b.rbi)+'</td>'+
+        '<td>'+numOrDash(b.bb)+'</td><td>'+numOrDash(b.so)+'</td>'+
+        '<td class="c-stat">'+esc(b.summary)+'</td></tr>';
+    }).join("");
+    var batHtml = '<div class="linescore-wrap" style="margin-top:12px">'+
+      '<div class="lbl">'+esc(side.shortName||side.name)+' · Batting</div>'+
+      '<table class="linescore"><thead><tr>'+
+        '<th class="team-col">Batter</th><th>Pos</th><th>AB</th><th>R</th><th>H</th>'+
+        '<th>RBI</th><th>BB</th><th>SO</th><th>Line</th>'+
+      '</tr></thead><tbody>'+batRows+'</tbody></table></div>';
+
+    var pRows = data.pitching.map(function(p){
+      return '<tr><td class="team-col">'+esc(p.name)+
+        '<span class="p-stat">'+esc(p.summary)+
+          (p.note ? ' <span style="color:var(--muted)">'+esc(p.note)+'</span>' : '')+
+        '</span></td>'+
+        '<td>'+numOrDash(p.ip)+'</td>'+
+        '<td>'+numOrDash(p.er)+'</td>'+
+        '<td>'+numOrDash(p.so)+'</td></tr>';
+    }).join("");
+    var pHtml = '<div class="linescore-wrap" style="margin-top:12px">'+
+      '<div class="lbl">'+esc(side.shortName||side.name)+' · Pitching</div>'+
+      '<table class="linescore"><thead><tr>'+
+        '<th class="team-col">Pitcher</th><th>IP</th><th>ER</th><th>SO</th>'+
+      '</tr></thead><tbody>'+pRows+'</tbody></table></div>';
+
+    return batHtml + pHtml;
+  }
+
+  return '<div class="card"><h2>Result · '+score+'</h2><div class="body">'
+    + decHtml+
+    '<div style="height:12px"></div>'+
+    linescoreHtml()+
+    section(d.away, sp.away)+
+    section(d.home, sp.home)+
+  '</div></div>';
+}
+
+function numOrDash(v){
+  return (v==null || v === "") ? "–" : esc(String(v));
 }
 
 function render(d, meta){
@@ -1036,30 +1175,28 @@ function render(d, meta){
     : '';
 
   var reveal = isRevealed(d.gamePk);
-  // Is there anything to reveal? Relievers count -- a bullpen tells a story.
-  var hasInGame = d.moves.length > 0
-               || (d.away.pitchers||[]).length > 1
-               || (d.home.pitchers||[]).length > 1;
+  var over = d.abstract === "Final";
 
-  var gate = "";
-  if(hasInGame && !reveal){
-    gate = '<div class="gate">'+
-      '<div class="g-txt"><b>In-game moves hidden.</b> Substitutions and relief '+
-      'pitchers give away how the game is going.</div>'+
-      '<button data-reveal="1">Show moves</button>'+
+  var gateTxt = over
+    ? '<b>Spoilers hidden.</b> The final score, decisions &amp; box score wait behind the button.'
+    : '<b>Spoilers hidden.</b> Relievers and mid-game moves wait behind the button.';
+  var gate = !reveal
+    ? '<div class="gate">'+
+      '<div class="g-txt">'+gateTxt+'</div>'+
+      '<button class="btn-spoilers" data-reveal="1">Show spoilers</button>'+
+    '</div>'
+    : '<div class="gate">'+
+      '<div class="g-txt">Spoilers shown for this game.</div>'+
+      '<button class="btn-spoilers active" data-reveal="0">Hide</button>'+
     '</div>';
-  }else if(reveal){
-    gate = '<div class="gate">'+
-      '<div class="g-txt">Showing in-game moves for this game.</div>'+
-      '<button data-reveal="0">Hide</button>'+
-    '</div>';
-  }
+
+  var results = (over && reveal && d.spoilers) ? resultCard(d) : "";
 
   $("content").innerHTML =
-    fellBack + hero + info + umps + fieldingCard(d, reveal) + gate +
+    fellBack + hero + info + gate + results +
+    umps + fieldingCard(d, reveal) +
     sideCard(d.away, "Away", d, reveal) +
-    sideCard(d.home, "Home", d, reveal) +
-    movesCard(d, reveal);
+    sideCard(d.home, "Home", d, reveal);
 }
 
 /* =======================================================================
