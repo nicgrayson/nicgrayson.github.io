@@ -154,8 +154,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .linescore th.team-col,.linescore td.team-col{text-align:left;font-family:var(--sans);font-weight:800;font-size:14px;padding-left:4px}
 .linescore th.tot,.linescore td.tot{font-weight:800;border-left:1px solid var(--line);min-width:28px}
 .linescore td.r-tot{font-size:15px;color:var(--accent)}
-.c-stat{font-size:12.5px;font-family:var(--mono);color:var(--muted);margin-top:2px;font-weight:500}
-.pit .p-stat{font-size:12px;font-family:var(--mono);color:var(--muted);margin-left:8px;font-weight:500}
+.p-stat{font-size:12px;font-family:var(--mono);color:var(--muted);margin-left:8px;font-weight:500}
 .decisions-row{display:flex;flex-wrap:wrap;gap:14px 22px;font-size:13.5px;padding:10px 0 2px}
 .dec-item{display:flex;align-items:baseline;gap:6px}
 .dec-role{font-family:var(--mono);font-size:11px;font-weight:800;padding:2px 6px;border-radius:4px;
@@ -717,15 +716,14 @@ function buildSpoilers(live, idx){
         batch.push({ pid: pid, name: name, num: num, bo: bo,
           pos: ((p.allPositions||[])[0]&&p.allPositions[0].abbreviation) ||
                (p.position||{}).abbreviation || "",
-          summary: b.summary,
           ab: b.atBats, r: b.runs, h: b.hits, rbi: b.rbi,
           bb: b.baseOnBalls, so: b.strikeOuts });
       }
       if(pt.summary){
         pitch.push({ pid: pid, name: name, num: num,
-          summary: pt.summary, note: pt.note || "",
-          ip: pt.inningsPitched, er: pt.earnedRuns,
-          so: pt.strikeOuts, runs: pt.runs });
+          ip: pt.inningsPitched, h: pt.hits, runs: pt.runs,
+          er: pt.earnedRuns, bb: pt.baseOnBalls, so: pt.strikeOuts,
+          note: pt.note || "" });
       }
     });
     batch.sort(function(a,b){ return a.bo - b.bo; });
@@ -1051,29 +1049,31 @@ function resultCard(d){
         '</td><td>'+esc(b.pos||"")+'</td>'+
         '<td>'+numOrDash(b.ab)+'</td><td>'+numOrDash(b.r)+'</td>'+
         '<td>'+numOrDash(b.h)+'</td><td>'+numOrDash(b.rbi)+'</td>'+
-        '<td>'+numOrDash(b.bb)+'</td><td>'+numOrDash(b.so)+'</td>'+
-        '<td class="c-stat">'+esc(b.summary)+'</td></tr>';
+        '<td>'+numOrDash(b.bb)+'</td><td>'+numOrDash(b.so)+'</td></tr>';
     }).join("");
     var batHtml = '<div class="linescore-wrap" style="margin-top:12px">'+
       '<div class="lbl">'+esc(side.shortName||side.name)+' · Batting</div>'+
       '<table class="linescore"><thead><tr>'+
         '<th class="team-col">Batter</th><th>Pos</th><th>AB</th><th>R</th><th>H</th>'+
-        '<th>RBI</th><th>BB</th><th>SO</th><th>Line</th>'+
+        '<th>RBI</th><th>BB</th><th>SO</th>'+
       '</tr></thead><tbody>'+batRows+'</tbody></table></div>';
 
     var pRows = data.pitching.map(function(p){
       return '<tr><td class="team-col">'+esc(p.name)+
-        '<span class="p-stat">'+esc(p.summary)+
-          (p.note ? ' <span style="color:var(--muted)">'+esc(p.note)+'</span>' : '')+
-        '</span></td>'+
+        (p.note ? ' <span class="p-stat">'+esc(p.note)+'</span>' : '')+
+        '</td>'+
         '<td>'+numOrDash(p.ip)+'</td>'+
+        '<td>'+numOrDash(p.h)+'</td>'+
+        '<td>'+numOrDash(p.runs)+'</td>'+
         '<td>'+numOrDash(p.er)+'</td>'+
+        '<td>'+numOrDash(p.bb)+'</td>'+
         '<td>'+numOrDash(p.so)+'</td></tr>';
     }).join("");
     var pHtml = '<div class="linescore-wrap" style="margin-top:12px">'+
       '<div class="lbl">'+esc(side.shortName||side.name)+' · Pitching</div>'+
       '<table class="linescore"><thead><tr>'+
-        '<th class="team-col">Pitcher</th><th>IP</th><th>ER</th><th>SO</th>'+
+        '<th class="team-col">Pitcher</th><th>IP</th><th>H</th><th>R</th>'+
+        '<th>ER</th><th>BB</th><th>SO</th>'+
       '</tr></thead><tbody>'+pRows+'</tbody></table></div>';
 
     return batHtml + pHtml;
