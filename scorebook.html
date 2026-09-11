@@ -1193,10 +1193,10 @@ function render(d, meta){
   var results = (over && reveal && d.spoilers) ? resultCard(d) : "";
 
   $("content").innerHTML =
-    fellBack + hero + info + gate + results +
-    umps + fieldingCard(d, reveal) +
+    fellBack + hero + info + umps + fieldingCard(d, reveal) +
     sideCard(d.away, "Away", d, reveal) +
-    sideCard(d.home, "Home", d, reveal);
+    sideCard(d.home, "Home", d, reveal) +
+    gate + results;
 }
 
 /* =======================================================================
