@@ -258,28 +258,32 @@ tr.subrow .poschip{font-size:12px;font-weight:700}
    default for next time.
    ======================================================================= */
 
-var DEFAULT_TEAM_ID = 112;           // baseball's oldest franchise
 var TEAM_COOKIE     = "scorebook_team";
 var API             = "https://statsapi.mlb.com";
 
-var TEAM_ID   = readTeamCookie();
+var TEAM_ID   = readTeamCookie();           // null until a team is picked
 var TEAM_NAME = "";                  // full name, e.g. "Chicago Cubs"
 var TEAM_SHORT = "";                 // e.g. "Cubs" (nice in sentences)
 var teams     = null;                // [{id, name, teamName, abbrev}]
 
 function cacheKey(teamId){
-  return "mlb-scorebook-cache-" + (teamId||TEAM_ID) + "-v2";
+  return "mlb-scorebook-cache-" + (teamId||"none") + "-v2";
 }
 function readTeamCookie(){
   try{
     var m = document.cookie.match(/(?:^|; )scorebook_team=(\d+)/);
     if(m) return parseInt(m[1], 10);
   }catch(e){}
-  return DEFAULT_TEAM_ID;
+  return null;
 }
 function saveTeamCookie(id){
   try{
     document.cookie = "scorebook_team="+id+"; max-age=31536000; path=/; SameSite=Lax";
+  }catch(e){}
+}
+function clearTeamCookie(){
+  try{
+    document.cookie = TEAM_COOKIE+"=; max-age=0; path=/; SameSite=Lax";
   }catch(e){}
 }
 function teamById(id){
@@ -1262,7 +1266,23 @@ function loadCache(dateStr){
   return null;
 }
 
+function noTeamPrompt(){
+  return '<div class="card"><h2>Pick a team</h2><div class="body">'+
+    'Use the <b>Team</b> dropdown above to choose a club. The page pre-fills '+
+    'that team’s game for the date you pick — lineups, umpires, fielding, and '+
+    '(behind the spoiler button) the final result. Your pick is saved for next time.</div></div>';
+}
+
 function refresh(manual){
+  if(!TEAM_ID){
+    clearTimeout(state.timer);
+    state.timer = null;
+    state.data = null;
+    state.lastError = null;
+    $("content").innerHTML = noTeamPrompt();
+    setStatus("Pick a team to get started", null, false);
+    return;
+  }
   if(state.loading) return;
   state.loading = true;
   setStatus(manual ? "Refreshing…" : "Checking for updates…", null, true);
@@ -1402,7 +1422,21 @@ $("datePick").addEventListener("change", function(e){
   if(e.target.value) setDate(e.target.value, true);
 });
 $("teamPick").addEventListener("change", function(e){
-  var id = parseInt(e.target.value, 10);
+  var v = e.target.value;
+  if(v === ""){
+    if(TEAM_ID == null) return;
+    TEAM_ID = null;
+    clearTeamCookie();
+    setTeamInfo();
+    clearTimeout(state.timer);
+    state.timer = null;
+    state.data = null;
+    state.lastError = null;
+    $("content").innerHTML = noTeamPrompt();
+    setStatus("Pick a team to get started", null, false);
+    return;
+  }
+  var id = parseInt(v, 10);
   if(isNaN(id) || id === TEAM_ID) return;
   TEAM_ID = id;
   saveTeamCookie(id);
@@ -1410,8 +1444,9 @@ $("teamPick").addEventListener("change", function(e){
   setDate(todayLocal(), true);
 });
 
-/* Fill the team dropdown from the MLB Teams API. The currently saved (or
-   default) team is selected, and its name feeds error messages & the header. */
+/* Fill the team dropdown from the MLB Teams API. The currently saved team
+   (if any) is selected; with no saved team the placeholder stays until the
+   visitor picks one. */
 function fetchTeams(){
   getJSON("/api/v1/teams?sportId=1").then(function(d){
     teams = [];
@@ -1422,16 +1457,24 @@ function fetchTeams(){
       return a.teamName < b.teamName ? -1 : a.teamName > b.teamName ? 1 : 0;
     });
     var sel = $("teamPick");
+    var ph = document.createElement("option");
+    ph.value = "";
+    ph.textContent = "Pick a team…";
+    sel.appendChild(ph);
     teams.forEach(function(t){
       var o = document.createElement("option");
       o.value = t.id;
       o.textContent = t.abbrev + " · " + t.teamName;
       sel.appendChild(o);
     });
-    var known = false;
-    for(var i=0;i<teams.length;i++) if(teams[i].id === TEAM_ID){ known = true; break; }
-    if(!known) TEAM_ID = DEFAULT_TEAM_ID;   // stale cookie
-    sel.value = String(TEAM_ID);
+    var known = TEAM_ID != null && teamById(TEAM_ID) != null;
+    if(!known){
+      if(TEAM_ID != null) clearTeamCookie();   // stale cookie — drop it
+      TEAM_ID = null;
+      sel.value = "";
+    }else{
+      sel.value = String(TEAM_ID);
+    }
     setTeamInfo();
   }).catch(function(){});
 }
