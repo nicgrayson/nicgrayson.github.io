@@ -1,0 +1,543 @@
+---
+permalink: /dateline-bingo/
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123a7a">
+<title>Dateline Bingo</title>
+<meta name="description" content="A clickable bingo card for watching Dateline. Tap a square when it happens.">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23123a7a'/%3E%3Ctext x='32' y='45' font-size='32' text-anchor='middle' fill='%23fff' font-family='Helvetica,Arial' font-weight='bold'%3EB%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{
+  --bg:#eef1f6; --panel:#ffffff; --ink:#141a24; --muted:#5b6675; --line:#ccd4e0;
+  --accent:#123a7a; --on-accent:#ffffff; --mark-bg:#e3ebf9; --gold:#9a6b12; --gold-ink:#fffdf5;
+  --grid:rgba(20,26,36,.05);
+  --radius:10px;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0e1319; --panel:#171d26; --ink:#e8edf4; --muted:#95a2b4; --line:#2c3542;
+  --accent:#6ea8f5; --on-accent:#0b1017; --mark-bg:#17314f; --gold:#e5b95b; --gold-ink:#1b1405;
+  --grid:rgba(232,237,244,.045);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background-color:var(--bg); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.4; -webkit-text-size-adjust:100%;
+  padding:0 0 env(safe-area-inset-bottom);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 48px}
+h1,h2,h3{margin:0}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:20; background:var(--bg);
+  padding:8px 0 10px; border-bottom:1px solid var(--line);
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+  padding-top:calc(8px + env(safe-area-inset-top));
+}
+.brand{font-weight:800;letter-spacing:-.02em;color:var(--accent);font-size:15px;margin-right:auto}
+.brand-sub{color:var(--muted);font-weight:700;font-size:13px;margin-left:5px}
+button{
+  font-family:var(--sans); font-size:15px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  padding:9px 12px; min-height:42px;
+}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+button:active{transform:scale(.97)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{width:100%;display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--muted)}
+.bar{flex:1;height:5px;border-radius:99px;background:var(--line);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .18s ease}
+
+/* ---------- the card ---------- */
+.board{margin:16px auto 0;max-width:min(560px,100%)}
+.frame{
+  border:3px solid var(--ink); border-radius:14px; background:var(--panel);
+  padding:5px; box-shadow:0 2px 10px rgba(0,0,0,.10);
+}
+.bcard{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);
+  gap:5px;aspect-ratio:1}
+.cell{
+  position:relative; display:flex; align-items:center; justify-content:center;
+  text-align:center; overflow:hidden; padding:4px 2px;
+  font-family:var(--sans); font-size:clamp(8px,1.85vw,12px); line-height:1.1;
+  font-weight:650; letter-spacing:-.012em; color:var(--ink);
+  background:var(--panel); border:1.5px solid var(--line); border-radius:7px;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  transition:background .12s ease,border-color .12s ease;
+}
+button.cell:active{transform:scale(.97)}
+.cell .lbl{display:block;width:100%;overflow-wrap:anywhere}
+.cell.wild{
+  background:repeating-linear-gradient(45deg,transparent,transparent 5px,var(--grid) 5px,var(--grid) 9px);
+  color:var(--muted); font-weight:800; letter-spacing:.06em;
+}
+.cell.free{
+  background:var(--accent); border-color:var(--accent); color:var(--on-accent);
+  font-weight:800; letter-spacing:.1em; font-size:clamp(10px,2vw,12.5px); cursor:default;
+}
+.cell.marked{background:var(--mark-bg);border-color:var(--accent)}
+.cell.marked::after{
+  content:"\2713"; position:absolute; top:1px; right:3px;
+  font-size:10px; font-weight:900; color:var(--accent); line-height:1;
+}
+.cell.bingo{
+  border-color:var(--gold);
+  box-shadow:inset 0 0 0 2px var(--gold);
+  animation:pulse 1.1s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:inset 0 0 0 2px var(--gold)}50%{box-shadow:inset 0 0 0 4px var(--gold)}}
+@media (prefers-reduced-motion:reduce){
+  .cell.bingo{animation:none}
+  button:active{transform:none}
+  .bar i{transition:none}
+}
+.legend{
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+  font-size:12px; color:var(--muted); margin-top:10px;
+}
+.legend b{color:var(--ink);font-weight:700}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:3px;
+  border:1.5px solid var(--line);vertical-align:-1px;margin-right:5px}
+.legend .sw.marked{background:var(--mark-bg);border-color:var(--accent)}
+.legend .sw.free{background:var(--accent);border-color:var(--accent)}
+
+/* ---------- panels ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  margin-top:14px;overflow:hidden}
+.card h2{
+  margin:0;padding:10px 14px;font-size:11.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);
+}
+.card .body{padding:12px 14px}
+details.card summary{
+  padding:10px 14px;font-size:11.5px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;
+}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:" ▾";float:right;font-size:13px;letter-spacing:0}
+details.card[open] summary{border-bottom:1px solid var(--line)}
+.hint{font-size:13px;color:var(--muted);margin:0 0 10px}
+ol.squares{margin:0;padding-left:20px;font-size:14px;line-height:1.55}
+ol.squares li{margin-bottom:3px}
+ol.squares .w{color:var(--muted);font-style:italic}
+ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
+
+/* ---------- bingo banner ---------- */
+.banner{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 8px);
+  z-index:40;display:flex;justify-content:center;padding:0 12px;pointer-events:none}
+.banner[hidden]{display:none}
+.banner-in{
+  pointer-events:auto;display:flex;align-items:center;gap:12px;
+  background:var(--gold);color:var(--gold-ink);border-radius:12px;
+  padding:11px 12px 11px 16px;box-shadow:0 6px 22px rgba(0,0,0,.28);
+  font-size:14px;max-width:min(560px,100%);
+}
+.banner-in strong{font-size:17px;font-weight:900;letter-spacing:.04em;white-space:nowrap}
+.banner-in span{flex:1;min-width:0;font-weight:650}
+.banner-in button{
+  background:rgba(0,0,0,.14);border:0;color:inherit;min-height:32px;
+  padding:4px 11px;font-size:16px;font-weight:800;line-height:1;
+}
+.foot{text-align:center;color:var(--muted);font-size:11.5px;margin-top:20px;line-height:1.6}
+
+@media print{
+  .topbar,.foot,.banner,.legend,.card,details{display:none}
+  body{background:#fff;font-size:11pt;padding:0}
+  .wrap{max-width:none;padding:0}
+  .board{max-width:6.5in}
+  .frame{border-color:#000;box-shadow:none}
+  .cell{background:#fff !important;color:#000 !important;border-color:#999}
+  .cell.free{background:#eee !important}
+  .cell.marked::after{display:none}
+  .cell.bingo{box-shadow:none;animation:none;border-color:#000}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="brand">DATELINE BINGO<span class="brand-sub" id="progressText"></span></span>
+    <button id="btnShuffle" class="primary" title="Shuffle the squares and clear your marks">New Card</button>
+    <button id="btnClear" title="Clear your marks, keep this arrangement">Clear</button>
+    <button id="btnTheme" title="Toggle dark mode"></button>
+    <div class="status">
+      <span class="bar"><i id="barFill"></i></span>
+      <span id="callText">Tap a square when it happens.</span>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="frame">
+      <div class="bcard" id="card" role="group" aria-label="Dateline Bingo card"></div>
+    </div>
+    <div class="legend">
+      <span><span class="sw free"></span>Free space</span>
+      <span><span class="sw marked"></span>Called</span>
+      <span><span class="sw"></span>Wild card</span>
+    </div>
+  </div>
+
+  <details class="card">
+    <summary>Squares on this card</summary>
+    <div class="body">
+      <p class="hint">A wild card can be daubed for any call. Marked squares are marked.</p>
+      <ol class="squares" id="squareList"></ol>
+    </div>
+  </details>
+
+  <div class="foot">
+    Not affiliated with or endorsed by NBC or any broadcast network.<br>
+    Your card and marks are saved in this browser &mdash; nothing leaves your device.
+  </div>
+</div>
+
+<div class="banner" id="banner" hidden role="status" aria-live="polite">
+  <div class="banner-in">
+    <strong>BINGO!</strong>
+    <span id="bannerText"></span>
+    <button id="bannerClose" aria-label="Dismiss">&times;</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =======================================================================
+   Dateline Bingo — a clickable card for watching Dateline.
+   Pure client-side, no network, no dependencies. The arrangement and your
+   marks live in localStorage, so you can close the tab mid-episode and
+   come back to the same card.
+   ======================================================================= */
+
+var GRID = 5;
+var WILD = -1;
+var SLOTS = GRID * GRID - 1;     // 25 squares minus the free centre
+var FREE_R = 2, FREE_C = 2;
+
+/* Keep these terse — a bingo square has to survive a ~60px cell. */
+var ITEMS = [
+  "Small town — so tiny no one can see it",
+  "Married a high school sweetheart",
+  "Slut dressed up as a euphemism",
+  "Insurance adjusted within 2 months of death",
+  "Alford plea",
+  "Defendant testifies against legal advice",
+  "Bereaved hooks up with the deceased's BFF",
+  "Shirt off their back!",
+  "Interviewer cries?",
+  "Meant to be a mother",
+  "Old person says a kid \"should be a model\"",
+  "Killer helps look for the missing person",
+  "Interviewer goes where they were killed or found",
+  "Bonus: wearing completely the wrong outfit",
+  "Cop knows someone involved",
+  "Humorous or embarrassing nickname",
+  "Malaprop or mispronunciation",
+  "Someone's first case"
+];
+
+var ROW_NAMES = ["Top row","Second row","Middle row","Fourth row","Bottom row"];
+var COL_NAMES = ["Left column","Second column","Middle column","Fourth column","Right column"];
+
+var THEME_KEY = "dateline_bingo_theme";
+var STATE_KEY = "dateline_bingo_v1";
+
+var state = null;
+var builtLayout = null;   // the layout currently painted into the DOM
+var bannerDismissed = false;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function centerIndex(){ return FREE_R * GRID + FREE_C; }
+
+/* ---------- card geometry ---------- */
+
+/* Slots are the 24 daubable squares in row-major order, skipping the centre. */
+function slotIndex(r, c){
+  var n = -1;
+  for(var i = 0; i < GRID * GRID; i++){
+    if(i === centerIndex()) continue;
+    n++;
+    if(i === r * GRID + c) return n;
+  }
+  return -1;
+}
+
+function allLines(){
+  var out = [], line = [], r, c;
+  for(r = 0; r < GRID; r++){
+    line = [];
+    for(c = 0; c < GRID; c++) line.push(r * GRID + c);
+    out.push({ name: ROW_NAMES[r], cells: line });
+  }
+  for(c = 0; c < GRID; c++){
+    line = [];
+    for(r = 0; r < GRID; r++) line.push(r * GRID + c);
+    out.push({ name: COL_NAMES[c], cells: line });
+  }
+  out.push({ name: "Top left to bottom right", cells: [0, 6, 12, 18, 24] });
+  out.push({ name: "Top right to bottom left", cells: [4, 8, 12, 16, 20] });
+  return out;
+}
+
+function shuffle(a){
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* Every item gets used once; any squares left over become wild cards so
+   they can be scattered anywhere on the card. */
+function newLayout(){
+  var pool = [], i;
+  for(i = 0; i < Math.min(ITEMS.length, SLOTS); i++) pool.push(i);
+  while(pool.length < SLOTS) pool.push(WILD);
+  return shuffle(pool);
+}
+
+function newMarks(){
+  var m = [];
+  for(var i = 0; i < GRID * GRID; i++) m.push(i === centerIndex());
+  return m;
+}
+
+/* ---------- persistence ---------- */
+
+function loadState(){
+  var s = null;
+  try{ s = JSON.parse(localStorage.getItem(STATE_KEY) || "null"); }catch(e){}
+  var ok = s && s.layout && s.layout.length === SLOTS && s.marks && s.marks.length === GRID * GRID;
+  if(ok){
+    for(var i = 0; i < SLOTS; i++){
+      var v = s.layout[i];
+      if(v !== WILD && (typeof v !== "number" || v < 0 || v >= ITEMS.length || v % 1 !== 0)){ ok = false; break; }
+    }
+  }
+  if(ok){
+    state = s;
+    state.marks[centerIndex()] = true;   // the free space can never be un-daubed
+    return;
+  }
+  state = { layout: newLayout(), marks: newMarks() };
+}
+
+function saveState(){
+  try{ localStorage.setItem(STATE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ---------- rendering ---------- */
+
+function cellHTML(r, c){
+  var pos = "grid-area:" + (r + 1) + "/" + (c + 1);
+  var idx = r * GRID + c;
+  if(idx === centerIndex()){
+    /* Carries a data-i so it can be picked up by the winning-line ring, but
+       data-free keeps the click handler from ever un-daubing it. */
+    return '<div class="cell free" style="' + pos + '" data-i="' + idx + '" data-free="1">FREE</div>';
+  }
+  var item = state.layout[slotIndex(r, c)];
+  if(item === WILD){
+    return '<button type="button" class="cell wild" style="' + pos + '" data-i="' + idx +
+           '" aria-pressed="false" aria-label="Wild card. Any call counts.">WILD</button>';
+  }
+  var label = ITEMS[item];
+  return '<button type="button" class="cell" style="' + pos + '" data-i="' + idx +
+         '" aria-pressed="false" aria-label="' + esc(label) + '"><span class="lbl">' +
+         esc(label) + "</span></button>";
+}
+
+function renderGrid(){
+  var html = "", r, c;
+  for(r = 0; r < GRID; r++){
+    for(c = 0; c < GRID; c++) html += cellHTML(r, c);
+  }
+  $("card").innerHTML = html;
+  builtLayout = state.layout.join(",");
+  renderList();
+}
+
+function renderList(){
+  var html = "", item, i;
+  for(i = 0; i < SLOTS; i++){
+    item = state.layout[i];
+    var text = item === WILD
+      ? '<span class="w">Wild card</span>'
+      : esc(ITEMS[item]);
+    var idx = slotIndexToCell(i);
+    var mark = state.marks[idx] ? ' <span class="m">✓ called</span>' : "";
+    html += "<li>" + text + mark + "</li>";
+  }
+  $("squareList").innerHTML = html;
+}
+
+function slotIndexToCell(slot){
+  var n = -1;
+  for(var i = 0; i < GRID * GRID; i++){
+    if(i === centerIndex()) continue;
+    n++;
+    if(n === slot) return i;
+  }
+  return -1;
+}
+
+function wins(){
+  var all = allLines(), out = [];
+  for(var i = 0; i < all.length; i++){
+    var full = true;
+    for(var j = 0; j < all[i].cells.length; j++){
+      if(!state.marks[all[i].cells[j]]){ full = false; break; }
+    }
+    if(full) out.push(all[i]);
+  }
+  return out;
+}
+
+/* Repaint mark state, the progress bar and the banner without touching the
+   DOM structure, so keyboard focus survives a tap. */
+function sync(){
+  var cells = $("card").querySelectorAll(".cell[data-i]");
+  var winCells = {};
+  var found = wins();
+  for(var w = 0; w < found.length; w++){
+    var cl = found[w].cells;
+    for(var j = 0; j < cl.length; j++) winCells[cl[j]] = true;
+  }
+  var marked = 0;
+  for(var i = 0; i < cells.length; i++){
+    var idx = +cells[i].getAttribute("data-i");
+    var free = cells[i].hasAttribute("data-free");
+    if(!free){
+      /* The free space is always daubed, so it never wears the "called"
+         treatment — it only ever picks up the winning-line ring. */
+      cells[i].classList.toggle("marked", !!state.marks[idx]);
+      cells[i].setAttribute("aria-pressed", state.marks[idx] ? "true" : "false");
+      if(state.marks[idx]) marked++;
+    }
+    cells[i].classList.toggle("bingo", !!winCells[idx]);
+  }
+  $("barFill").style.width = (100 * marked / SLOTS) + "%";
+  $("progressText").textContent = marked + "/" + SLOTS;
+  $("callText").textContent = marked === 0
+    ? "Tap a square when it happens."
+    : (marked + (marked === 1 ? " square called." : " squares called."));
+  renderList();
+  showBanner(found);
+}
+
+function showBanner(found){
+  var banner = $("banner");
+  if(!found.length){
+    banner.hidden = true;
+    bannerDismissed = false;
+    return;
+  }
+  var names = [];
+  for(var i = 0; i < found.length; i++) names.push(found[i].name);
+  $("bannerText").textContent = names.join(" · ");
+  banner.hidden = bannerDismissed;
+}
+
+function render(){
+  if(state.layout.join(",") !== builtLayout) renderGrid();
+  sync();
+}
+
+/* ---------- actions ---------- */
+
+function newCard(){
+  state = { layout: newLayout(), marks: newMarks() };
+  bannerDismissed = false;
+  saveState();
+  render();
+}
+
+function clearMarks(){
+  state.marks = newMarks();
+  bannerDismissed = false;
+  saveState();
+  sync();
+}
+
+/* Light is the default; dark is an opt-in choice, stored in localStorage. */
+function applyTheme(mode){
+  var root = document.documentElement;
+  if(mode === "dark") root.setAttribute("data-theme", "dark");
+  else root.removeAttribute("data-theme");
+  $("btnTheme").textContent = (mode === "dark") ? "Light" : "Dark";
+  try{
+    var m = document.querySelector('meta[name="theme-color"]');
+    if(m){
+      var accent = getComputedStyle(root).getPropertyValue("--accent").trim() || "#123a7a";
+      m.setAttribute("content", accent);
+    }
+  }catch(e){}
+}
+function toggleTheme(){
+  var dark = document.documentElement.getAttribute("data-theme") === "dark";
+  var mode = dark ? "light" : "dark";
+  try{
+    if(mode === "dark") localStorage.setItem(THEME_KEY, "dark");
+    else localStorage.removeItem(THEME_KEY);
+  }catch(e){}
+  applyTheme(mode);
+}
+function readTheme(){
+  try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; }
+}
+
+/* ---------- wiring ---------- */
+
+$("card").addEventListener("click", function(e){
+  var el = e.target;
+  while(el && el !== this && !(el.getAttribute && el.getAttribute("data-i") !== null)){
+    el = el.parentNode;
+  }
+  if(!el || el === this || el.hasAttribute("data-free")) return;
+  var i = +el.getAttribute("data-i");
+  state.marks[i] = !state.marks[i];
+  saveState();
+  sync();
+});
+
+$("btnShuffle").addEventListener("click", newCard);
+$("btnClear").addEventListener("click", clearMarks);
+$("btnTheme").addEventListener("click", toggleTheme);
+$("bannerClose").addEventListener("click", function(){
+  bannerDismissed = true;
+  $("banner").hidden = true;
+});
+
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Escape") return;
+  if(!$("banner").hidden){
+    bannerDismissed = true;
+    $("banner").hidden = true;
+  }
+});
+
+(function(){
+  applyTheme(readTheme() === "dark" ? "dark" : "light");   // light by default
+  loadState();
+  render();
+})();
+</script>
+</body>
+</html>
