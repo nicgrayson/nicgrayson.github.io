@@ -28,6 +28,7 @@ description: "Nic Grayson is an infrastructure engineer."
   <li><a href="/game-day-sheet/">Game Day Sheet</a></li>
   <li><a href="/scorecard/">Scorecard Builder</a></li>
   <li><a href="/dateline-bingo/">Dateline Bingo</a></li>
+  <li><a href="/wordjar/">Word Jar</a></li>
   <li><a href="https://github.com/nicgrayson">GitHub</a></li>
   <li><a href="mailto:me@nicgrayson.com">Email</a></li>
   <li><a href="/resume.pdf">Resume</a></li>
