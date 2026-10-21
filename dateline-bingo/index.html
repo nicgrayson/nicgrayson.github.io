@@ -184,7 +184,7 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
       <div class="bcard" id="card" role="group" aria-label="Dateline Bingo card"></div>
     </div>
     <div class="legend">
-      <span><span class="sw free"></span>Free space</span>
+      <span><span class="sw free"></span>Free space (affair)</span>
       <span><span class="sw marked"></span>Called</span>
       <span><span class="sw"></span>Wild card</span>
     </div>
@@ -245,7 +245,19 @@ var ITEMS = [
   "Cop knows someone involved",
   "Humorous or embarrassing nickname",
   "Malaprop or mispronunciation",
-  "Someone's first case"
+  "Someone's first case",
+  "Lit up like a Christmas tree",
+  "This was an execution",
+  "Not in THIS part of town!",
+  "Fake robbery",
+  "On surveillance buying a shovel",
+  "God forbid women have hobbies",
+  "Never met a stranger",
+  "Didn't want for anything",
+  "Like a horror movie",
+  "Adult testifies about a childhood memory",
+  "Common-law spouses",
+  "Says the name of a TV show"
 ];
 
 var ROW_NAMES = ["Top row","Second row","Middle row","Fourth row","Bottom row"];
@@ -351,7 +363,9 @@ function cellHTML(r, c){
   if(idx === centerIndex()){
     /* Carries a data-i so it can be picked up by the winning-line ring, but
        data-free keeps the click handler from ever un-daubing it. */
-    return '<div class="cell free" style="' + pos + '" data-i="' + idx + '" data-free="1">FREE</div>';
+    /* Every Dateline has an affair, so the free space is always daubed. */
+    return '<div class="cell free" style="' + pos + '" data-i="' + idx + '" data-free="1"' +
+           ' title="Free space — an affair is always called">AFFAIR</div>';
   }
   var item = state.layout[slotIndex(r, c)];
   if(item === WILD){
