@@ -318,13 +318,15 @@ function shuffle(a){
   return a;
 }
 
-/* Every item gets used once; any squares left over become wild cards so
-   they can be scattered anywhere on the card. */
+/* Pick SLOTS random items from the full pool; if there are fewer items than
+   slots, the remainder become wild cards so they can be scattered anywhere. */
 function newLayout(){
   var pool = [], i;
-  for(i = 0; i < Math.min(ITEMS.length, SLOTS); i++) pool.push(i);
+  for(i = 0; i < ITEMS.length; i++) pool.push(i);
+  shuffle(pool);
+  if(pool.length > SLOTS) pool.length = SLOTS;
   while(pool.length < SLOTS) pool.push(WILD);
-  return shuffle(pool);
+  return pool;
 }
 
 function newMarks(){
