@@ -79,6 +79,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 }
 button.cell:active{transform:scale(.97)}
 .cell .lbl{display:block;width:100%;overflow-wrap:anywhere}
+.cell .lbl.emoji{font-size:clamp(22px,6vw,38px);line-height:1}
 .cell.wild{
   background:repeating-linear-gradient(45deg,transparent,transparent 5px,var(--grid) 5px,var(--grid) 9px);
   color:var(--muted); font-weight:800; letter-spacing:.06em;
@@ -165,6 +166,7 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
   .cell.marked{background:#fff !important}
   .cell.marked::after{display:none}
   .cell.bingo{box-shadow:none !important;animation:none !important;border-color:#000 !important}
+  .cell .lbl.emoji{font-size:22pt}
 }
 </style>
 </head>
@@ -381,8 +383,9 @@ function cellHTML(r, c){
            '" aria-pressed="false" aria-label="Wild card. Any call counts.">WILD</button>';
   }
   var label = ITEMS[item];
+  var lblClass = /[\uD800-\uDBFF][\uDC00-\uDFFF]/.test(label) ? ' class="lbl emoji"' : ' class="lbl"';
   return '<button type="button" class="cell" style="' + pos + '" data-i="' + idx +
-         '" aria-pressed="false" aria-label="' + esc(label) + '"><span class="lbl">' +
+         '" aria-pressed="false" aria-label="' + esc(label) + '"><span' + lblClass + '>' +
          esc(label) + "</span></button>";
 }
 
