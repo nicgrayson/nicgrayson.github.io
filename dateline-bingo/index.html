@@ -7,8 +7,8 @@ permalink: /dateline-bingo/
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#123a7a">
-<title>Dateline Bingo</title>
-<meta name="description" content="A clickable bingo card for watching Dateline. Tap a square when it happens.">
+<title>True Crime Bingo</title>
+<meta name="description" content="A clickable bingo card for watching true crime shows. Tap a square when it happens.">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23123a7a'/%3E%3Ctext x='32' y='45' font-size='32' text-anchor='middle' fill='%23fff' font-family='Helvetica,Arial' font-weight='bold'%3EB%3C/text%3E%3C/svg%3E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -62,6 +62,15 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* ---------- the card ---------- */
 .board{margin:16px auto 0;max-width:min(560px,100%)}
+.bingo-header{
+  text-align:center;
+  font-weight:900;
+  letter-spacing:.6em;
+  text-indent:.6em;
+  font-size:clamp(18px,6vw,32px);
+  margin-bottom:6px;
+  color:var(--accent);
+}
 .frame{
   border:3px solid var(--ink); border-radius:14px; background:var(--panel);
   padding:5px; box-shadow:0 2px 10px rgba(0,0,0,.10);
@@ -158,6 +167,7 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
   body{background:#fff !important;background-image:none !important;font-size:11pt;padding:0}
   .wrap{max-width:none;padding:0}
   .board{max-width:6.5in;margin:0 auto}
+  .bingo-header{display:none !important}
   .frame{border:3px solid #000 !important;box-shadow:none;background:#fff}
   .bcard{gap:4px}
   .cell{background:#fff !important;color:#000 !important;border:1.5px solid #000 !important;font-size:9pt;line-height:1.05}
@@ -174,7 +184,7 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
 <div class="wrap">
 
   <div class="topbar">
-    <span class="brand">DATELINE BINGO<span class="brand-sub" id="progressText"></span></span>
+    <span class="brand">TRUE CRIME BINGO<span class="brand-sub" id="progressText"></span></span>
     <button id="btnShuffle" class="primary" title="Shuffle the squares and clear your marks">New Card</button>
     <button id="btnClear" title="Clear your marks, keep this arrangement">Clear</button>
     <button id="btnPrint" title="Print this bingo card">Print</button>
@@ -186,8 +196,9 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
   </div>
 
   <div class="board">
+    <div class="bingo-header" aria-label="Bingo header">C&nbsp;R&nbsp;I&nbsp;M&nbsp;E</div>
     <div class="frame">
-      <div class="bcard" id="card" role="group" aria-label="Dateline Bingo card"></div>
+      <div class="bcard" id="card" role="group" aria-label="True Crime Bingo card"></div>
     </div>
     <div class="legend">
       <span><span class="sw free"></span>Free space (affair)</span>
@@ -239,7 +250,7 @@ var ITEMS = [
   "Slut dressed up as a euphemism",
   "Insurance adjusted within 2 months of death",
   "Alford plea",
-  "Defendant testifies against legal advice",
+  "Defendant testifies",
   "Bereaved hooks up with the deceased's BFF",
   "Shirt off their back!",
   "Interviewer cries",
@@ -247,16 +258,19 @@ var ITEMS = [
   "Old person says a kid \"should be a model\"",
   "Killer helps look for the missing person",
   "Interviewer goes where they were killed or found",
-  "Wearing completely the wrong outfit",
+  "Outfit does not match tone of episode",
   "Cop knows someone involved",
   "Humorous or embarrassing nickname",
   "Malaprop or mispronunciation",
   "Someone's first case",
   "Lit up like a Christmas tree",
-  "This was an execution",
+  "This was an EXECUTION",
   "Not in THIS part of town!",
-  "Fake robbery",
-  "On surveillance buying a shovel",
+  "Obvious/bad fake robbery",
+  "This was  . . EVIL",
+  "Unique idiom",
+  "No parole",
+  "On surveillance buying a shovel and/or murder kit",
   "God forbid women have hobbies",
   "Never met a stranger",
   "Didn't want for anything",
