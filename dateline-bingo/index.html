@@ -167,7 +167,15 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
   body{background:#fff !important;background-image:none !important;font-size:11pt;padding:0}
   .wrap{max-width:none;padding:0}
   .board{max-width:6.5in;margin:0 auto}
-  .bingo-header{display:none !important}
+  .bingo-header{
+    display:grid !important;
+    grid-template-columns:repeat(5,1fr);
+    gap:4px;
+    font-size:18pt;
+    color:#000;
+    margin-bottom:4px;
+  }
+  .bingo-header span{display:flex;align-items:center;justify-content:center}
   .frame{border:3px solid #000 !important;box-shadow:none;background:#fff}
   .bcard{gap:4px}
   .cell{background:#fff !important;color:#000 !important;border:1.5px solid #000 !important;font-size:9pt;line-height:1.05}
@@ -196,7 +204,7 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
   </div>
 
   <div class="board">
-    <div class="bingo-header" aria-label="Bingo header">C&nbsp;R&nbsp;I&nbsp;M&nbsp;E</div>
+    <div class="bingo-header" aria-label="Bingo header"><span>C</span><span>R</span><span>I</span><span>M</span><span>E</span></div>
     <div class="frame">
       <div class="bcard" id="card" role="group" aria-label="True Crime Bingo card"></div>
     </div>
