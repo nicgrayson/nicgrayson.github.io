@@ -27,7 +27,7 @@ description: "Nic Grayson is an infrastructure engineer."
 <ul class="home-links">
   <li><a href="/game-day-sheet/">Game Day Sheet</a></li>
   <li><a href="/scorecard/">Scorecard Builder</a></li>
-  <li><a href="/true-crime-bingo/">True Criime Bingo</a></li>
+  <li><a href="/true-crime-bingo/">True Crime Bingo</a></li>
   <li><a href="/wordjar/">Word Jar</a></li>
   <li><a href="/marker-tracker/">Marker Tracker</a></li>
   <li><a href="https://github.com/nicgrayson">GitHub</a></li>
