@@ -223,6 +223,14 @@ ol.squares .m{color:var(--muted);font-size:12px;font-weight:700}
     </div>
   </details>
 
+  <details class="card" id="fullListCard">
+    <summary>All squares in pool</summary>
+    <div class="body">
+      <p class="hint">Full list of every possible square that can appear.</p>
+      <ol class="squares" id="fullSquareList"></ol>
+    </div>
+  </details>
+
   <div class="foot">
     Not affiliated with or endorsed by NBC or any broadcast network.<br>
     Your card and marks are saved in this browser &mdash; nothing leaves your device.
@@ -442,6 +450,15 @@ function renderList(){
   $("squareList").innerHTML = html;
 }
 
+function renderFullList(){
+  var html = "", i;
+  for(i = 0; i < ITEMS.length; i++){
+    html += "<li>" + esc(ITEMS[i]) + "</li>";
+  }
+  var el = $("fullSquareList");
+  if(el) el.innerHTML = html;
+}
+
 function slotIndexToCell(slot){
   var n = -1;
   for(var i = 0; i < GRID * GRID; i++){
@@ -592,6 +609,7 @@ document.addEventListener("keydown", function(e){
   applyTheme(readTheme() === "dark" ? "dark" : "light");   // light by default
   loadState();
   render();
+  renderFullList();
 })();
 </script>
 </body>
