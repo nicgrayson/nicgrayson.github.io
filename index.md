@@ -30,6 +30,7 @@ description: "Nic Grayson is an infrastructure engineer."
   <li><a href="/true-crime-bingo/">True Crime Bingo</a></li>
   <li><a href="/wordjar/">Word Jar</a></li>
   <li><a href="/marker-tracker/">Marker Tracker</a></li>
+  <li><a href="https://github.com/nicgrayson/nicgrayson.github.io/issues/new">Request a new app or change</a></li>
   <li><a href="https://github.com/nicgrayson">GitHub</a></li>
   <li><a href="mailto:me@nicgrayson.com">Email</a></li>
   <li><a href="/resume.pdf">Resume</a></li>
